@@ -3,6 +3,7 @@ import './App.css';
 import logoUrl from './assets/logo.png';
 import gsap from 'gsap';
 import SplitType from 'split-type';
+import clarity from './lib/clarity';
 
 const COMPANIES = [
   { name: 'Airbnb', domain: 'airbnb.com' },
@@ -94,6 +95,7 @@ function App() {
     try {
       navigator.clipboard.writeText(command);
       setCopied(true);
+      clarity.event('copy_command');
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Failed to copy:", err);
