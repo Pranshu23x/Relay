@@ -1,20 +1,20 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=DM+Mono&family=Instrument+Serif:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&family=Instrument+Serif:ital@0;1&display=swap');
 
 :root {
   /* Colors from DESIGN.md */
   --color-primary: #f7f5f0;
-  --color-on-primary: #2b2622;
+  --color-on-primary: #050505;
   --color-ink: #f7f5f0;
   --color-body: #c9c0ad;
   --color-body-strong: #dad2c1;
   --color-mute: #aea69c;
-  --color-canvas: #2b2622;
-  --color-canvas-soft: #383330;
-  --color-hairline: #3f3a36;
+  --color-canvas: #050505;
+  --color-canvas-soft: #101010;
+  --color-hairline: #242424;
 
   /* Typography */
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono: 'DM Mono', ui-monospace, monospace;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', ui-monospace, monospace;
   --font-serif: 'Instrument Serif', serif;
 
   /* Spacing */
