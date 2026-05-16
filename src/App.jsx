@@ -4,10 +4,11 @@ import logoUrl from './assets/logo.png';
 import terminalImageUrl from './assets/terminal_image.png';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import SplitType from 'split-type';
 import clarity from './lib/clarity';
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 const COMPANIES = [
   { name: 'Airbnb', domain: 'airbnb.com' },
@@ -136,6 +137,61 @@ function App() {
 
     // Cleanup split elements on unmount
     return () => text.revert();
+  }, []);
+
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const isTouchPrimary = window.matchMedia('(pointer: coarse)');
+
+    if (prefersReducedMotion.matches || isTouchPrimary.matches) return;
+
+    let targetY = window.scrollY;
+    let scrollTween = null;
+
+    const getMaxScroll = () => Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    const clampScroll = (value) => Math.max(0, Math.min(getMaxScroll(), value));
+
+    const handleWheel = (event) => {
+      if (event.ctrlKey || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+
+      event.preventDefault();
+
+      if (!scrollTween || !scrollTween.isActive()) {
+        targetY = window.scrollY;
+      }
+
+      const deltaMultiplier = event.deltaMode === 1 ? 18 : event.deltaMode === 2 ? window.innerHeight : 1;
+      targetY = clampScroll(targetY + event.deltaY * deltaMultiplier);
+
+      scrollTween = gsap.to(window, {
+        scrollTo: { y: targetY, autoKill: true },
+        duration: 0.58,
+        ease: 'power3.out',
+        overwrite: true,
+        onUpdate: ScrollTrigger.update,
+        onComplete: () => {
+          targetY = window.scrollY;
+          scrollTween = null;
+        },
+      });
+    };
+
+    const syncScrollTarget = () => {
+      if (!scrollTween || !scrollTween.isActive()) {
+        targetY = window.scrollY;
+      }
+    };
+
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    window.addEventListener('mousedown', syncScrollTarget);
+    window.addEventListener('resize', syncScrollTarget);
+
+    return () => {
+      scrollTween?.kill();
+      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('mousedown', syncScrollTarget);
+      window.removeEventListener('resize', syncScrollTarget);
+    };
   }, []);
 
   useEffect(() => {
