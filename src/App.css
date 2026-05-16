@@ -34,6 +34,42 @@
   white-space: nowrap;
 }
 
+.npm-download-badge {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  color: #f7f5f0;
+  display: inline-flex;
+  gap: 10px;
+  min-height: 43px;
+  padding: 7px 13px 7px 8px;
+}
+
+.npm-logo-mark {
+  align-items: center;
+  background: #cb3837;
+  border-radius: 5px;
+  color: #ffffff;
+  display: inline-flex;
+  flex: none;
+  font-family: 'JetBrains Mono', 'SF Mono', var(--font-mono);
+  font-size: 13px;
+  font-weight: 800;
+  height: 28px;
+  justify-content: center;
+  letter-spacing: -0.08em;
+  line-height: 1;
+  width: 38px;
+}
+
+.npm-download-text {
+  color: #d9d4c8;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .nav-contact,
 .hero-command-text,
 .logo-pill-name {
@@ -47,6 +83,7 @@
 }
 
 .feedback-section {
+  contain: paint;
   overflow: hidden;
   padding: 48px 0 64px;
 }
@@ -109,7 +146,9 @@
 
 .feedback-track {
   animation: testimonial-marquee-left 54s linear infinite;
+  backface-visibility: hidden;
   display: flex;
+  will-change: transform;
   width: max-content;
 }
 
@@ -219,9 +258,10 @@
   min-height: min(720px, calc(100vh - 88px));
   overflow: hidden;
   position: relative;
-  transform: translateY(var(--how-y)) scale(var(--how-scale));
+  transform: translate3d(0, var(--how-y), 0) scale(var(--how-scale));
   transform-origin: top center;
-  will-change: border-radius, margin, transform;
+  will-change: transform;
+  contain: paint;
 }
 
 .how-panel::after {
@@ -474,6 +514,13 @@
   text-align: center;
 }
 
+.coming-soon-content {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
 .coming-soon-section h2 {
   color: #f7f5f0;
   font-size: clamp(46px, 7vw, 104px);
@@ -482,6 +529,49 @@
   line-height: 0.95;
   max-width: 920px;
   visibility: hidden;
+}
+
+.coming-soon-copy {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  color: #f7f5f0;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: 'JetBrains Mono', 'SF Mono', var(--font-mono);
+  font-size: 15px;
+  gap: 12px;
+  max-width: min(100%, 430px);
+  padding: 13px 15px 13px 18px;
+  visibility: hidden;
+}
+
+.coming-soon-copy span {
+  color: #8a8a8a;
+}
+
+.coming-soon-copy code {
+  color: #ffffff;
+  font-family: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.coming-soon-copy strong {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  color: #ffffff;
+  font-family: 'Geist', 'SF Pro Display', var(--font-sans);
+  font-size: 12px;
+  font-weight: 800;
+  padding: 8px 12px;
+}
+
+.coming-soon-copy:hover {
+  background: rgba(255, 255, 255, 0.085);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .site-footer {
@@ -636,12 +726,22 @@
   }
 
   .hero-actions {
+    flex-direction: column;
     justify-content: flex-start;
   }
 
   .hero-copy-button {
     padding: 11px 20px !important;
     width: 100%;
+  }
+
+  .npm-download-badge {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .npm-download-text {
+    font-size: 12px;
   }
 
   .hero-terminal-wrap {
@@ -792,6 +892,22 @@
   .coming-soon-section {
     min-height: 62vh;
     padding: 64px 24px;
+  }
+
+  .coming-soon-content {
+    gap: 22px;
+    width: 100%;
+  }
+
+  .coming-soon-copy {
+    font-size: 13px;
+    gap: 8px;
+    padding: 11px 12px 11px 14px;
+    width: 100%;
+  }
+
+  .coming-soon-copy code {
+    flex: 1;
   }
 
   .site-footer {

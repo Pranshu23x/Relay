@@ -42,12 +42,18 @@
   padding: 0;
 }
 
+html {
+  scroll-behavior: auto;
+  scrollbar-gutter: stable;
+}
+
 body {
   background-color: var(--color-canvas);
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   line-height: 1.5;
+  overscroll-behavior-y: none;
   overflow-x: hidden;
 }
 

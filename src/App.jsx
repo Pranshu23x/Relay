@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import 'lenis/dist/lenis.css';
 import logoUrl from './assets/logo.png';
 import terminalImageUrl from './assets/terminal_image.png';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
+import Lenis from 'lenis';
 import SplitType from 'split-type';
 import clarity from './lib/clarity';
 
-gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+gsap.registerPlugin(ScrollTrigger);
 
 const COMPANIES = [
   { name: 'Airbnb', domain: 'airbnb.com' },
@@ -141,56 +142,39 @@ function App() {
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const isTouchPrimary = window.matchMedia('(pointer: coarse)');
 
-    if (prefersReducedMotion.matches || isTouchPrimary.matches) return;
+    if (prefersReducedMotion.matches) return;
 
-    let targetY = window.scrollY;
-    let scrollTween = null;
+    const lenis = new Lenis({
+      duration: 1.18,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      syncTouch: false,
+      wheelMultiplier: 0.88,
+      touchMultiplier: 1,
+      overscroll: false,
+      anchors: true,
+    });
 
-    const getMaxScroll = () => Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-    const clampScroll = (value) => Math.max(0, Math.min(getMaxScroll(), value));
-
-    const handleWheel = (event) => {
-      if (event.ctrlKey || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
-
-      event.preventDefault();
-
-      if (!scrollTween || !scrollTween.isActive()) {
-        targetY = window.scrollY;
-      }
-
-      const deltaMultiplier = event.deltaMode === 1 ? 18 : event.deltaMode === 2 ? window.innerHeight : 1;
-      targetY = clampScroll(targetY + event.deltaY * deltaMultiplier);
-
-      scrollTween = gsap.to(window, {
-        scrollTo: { y: targetY, autoKill: true },
-        duration: 0.58,
-        ease: 'power3.out',
-        overwrite: true,
-        onUpdate: ScrollTrigger.update,
-        onComplete: () => {
-          targetY = window.scrollY;
-          scrollTween = null;
-        },
-      });
+    const updateLenis = (time) => {
+      lenis.raf(time * 1000);
     };
 
-    const syncScrollTarget = () => {
-      if (!scrollTween || !scrollTween.isActive()) {
-        targetY = window.scrollY;
-      }
+    const refreshLenis = () => {
+      lenis.resize();
+      ScrollTrigger.refresh();
     };
 
-    window.addEventListener('wheel', handleWheel, { passive: false });
-    window.addEventListener('mousedown', syncScrollTarget);
-    window.addEventListener('resize', syncScrollTarget);
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add(updateLenis);
+    gsap.ticker.lagSmoothing(0);
+    window.addEventListener('resize', refreshLenis);
 
     return () => {
-      scrollTween?.kill();
-      window.removeEventListener('wheel', handleWheel);
-      window.removeEventListener('mousedown', syncScrollTarget);
-      window.removeEventListener('resize', syncScrollTarget);
+      window.removeEventListener('resize', refreshLenis);
+      gsap.ticker.remove(updateLenis);
+      lenis.destroy();
+      ScrollTrigger.update();
     };
   }, []);
 
@@ -287,7 +271,7 @@ function App() {
 
     const ctx = gsap.context(() => {
       gsap.fromTo(
-        '.coming-soon-text',
+        '.coming-soon-text, .coming-soon-copy',
         { autoAlpha: 0, y: 52, scale: 0.96 },
         {
           autoAlpha: 1,
@@ -295,6 +279,7 @@ function App() {
           scale: 1,
           duration: 0.85,
           ease: 'power3.out',
+          stagger: 0.08,
           scrollTrigger: {
             trigger: section,
             start: 'top 72%',
@@ -543,9 +528,7 @@ function App() {
         zIndex: 50,
         position: 'sticky',
         top: 0,
-        backgroundColor: 'rgba(5, 5, 5, 0.72)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
+        backgroundColor: 'rgba(5, 5, 5, 0.9)',
         borderBottom: '1px solid rgba(255, 255, 255, 0.05)'
       }}>
         <div className="nav-brand" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -619,9 +602,13 @@ function App() {
                   cursor: 'pointer',
                   transition: 'background-color 0.2s ease'
                 }}
-              >
+            >
                 {copiedArea === 'hero' ? 'Copied!' : 'Copy Command'}
               </button>
+              <div className="npm-download-badge" aria-label="npm downloads badge">
+                <span className="npm-logo-mark">npm</span>
+                <span className="npm-download-text">1000+ downloads in 3 days</span>
+              </div>
             </div>
           </div>
 
@@ -702,7 +689,9 @@ function App() {
           <div className="marquee" style={{
             display: 'flex',
             width: 'fit-content',
-            animation: 'marquee 120s linear infinite'
+            animation: 'marquee 120s linear infinite',
+            transform: 'translateZ(0)',
+            willChange: 'transform'
           }}>
             {[...COMPANIES, ...COMPANIES].map((company, idx) => {
               const filename = company.name.toLowerCase().replace(/[^a-z0-9]/g, '') + '.png';
@@ -851,7 +840,14 @@ function App() {
         </section>
 
         <section ref={comingSoonRef} className="coming-soon-section" aria-labelledby="coming-soon-heading">
-          <h2 className="coming-soon-text" id="coming-soon-heading">More Websites Coming Soon</h2>
+          <div className="coming-soon-content">
+            <h2 className="coming-soon-text" id="coming-soon-heading">More Websites Coming Soon</h2>
+            <button className="coming-soon-copy" type="button" onClick={() => handleCopy('coming')}>
+              <span>$</span>
+              <code>{command}</code>
+              <strong>{copiedArea === 'coming' ? 'Copied' : 'Copy'}</strong>
+            </button>
+          </div>
         </section>
       </main>
 
