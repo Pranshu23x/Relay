@@ -30,6 +30,22 @@
   z-index: 1;
 }
 
+.hero-title-phrase {
+  white-space: nowrap;
+}
+
+.nav-contact,
+.hero-command-text,
+.logo-pill-name {
+  min-width: 0;
+}
+
+.hero-command-text span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .feedback-section {
   overflow: hidden;
   padding: 48px 0 64px;
@@ -561,6 +577,124 @@
 }
 
 @media (max-width: 760px) {
+  .site-nav {
+    padding: 12px 18px !important;
+  }
+
+  .nav-brand {
+    gap: 9px !important;
+  }
+
+  .nav-logo {
+    width: 42px !important;
+  }
+
+  .nav-wordmark {
+    font-size: 21px !important;
+  }
+
+  .nav-contact {
+    max-width: 43vw;
+    min-width: 104px !important;
+    overflow: hidden;
+    padding: 9px 12px !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .page-main {
+    justify-content: flex-start !important;
+  }
+
+  .hero-landing {
+    align-items: stretch !important;
+    flex-direction: column;
+    gap: 28px !important;
+    padding: 44px 20px 10px !important;
+  }
+
+  .hero-copy-panel {
+    flex: 1 1 auto !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    text-align: left;
+    width: 100%;
+  }
+
+  .hero-title {
+    font-size: clamp(31px, 10vw, 44px) !important;
+    letter-spacing: -1.2px !important;
+    line-height: 1.05 !important;
+    margin-bottom: 14px !important;
+  }
+
+  .hero-subtitle {
+    font-size: 16px !important;
+    line-height: 1.55 !important;
+    margin-bottom: 24px !important;
+    max-width: 100% !important;
+  }
+
+  .hero-actions {
+    justify-content: flex-start;
+  }
+
+  .hero-copy-button {
+    padding: 11px 20px !important;
+    width: 100%;
+  }
+
+  .hero-terminal-wrap {
+    justify-content: center !important;
+    width: 100%;
+  }
+
+  .cli-box {
+    max-width: 100% !important;
+    min-width: 0 !important;
+    padding: 18px !important;
+    padding-top: 44px !important;
+    width: 100% !important;
+  }
+
+  .hero-command-row {
+    gap: 10px;
+  }
+
+  .hero-command-text {
+    flex: 1;
+    font-size: 13px !important;
+    gap: 8px !important;
+  }
+
+  .hero-command-copy {
+    flex: none;
+    padding: 6px 10px !important;
+  }
+
+  .logo-marquee-section {
+    padding: 18px 0 !important;
+  }
+
+  .logo-marquee-fade {
+    width: 56px !important;
+  }
+
+  .logo-pill {
+    gap: 8px !important;
+    margin: 0 8px !important;
+    padding: 7px 10px !important;
+  }
+
+  .logo-pill-image {
+    height: 22px !important;
+    width: 22px !important;
+  }
+
+  .logo-pill-name {
+    font-size: 13px !important;
+  }
+
   .feedback-section {
     padding: 36px 0 52px;
   }
@@ -578,14 +712,19 @@
   }
 
   .how-shell {
-    --how-radius: 64px;
-    --how-side: 28px;
+    --how-radius: 56px;
+    --how-side: 16px;
     --how-y: 18px;
-    padding-top: 32px;
+    min-height: 100svh;
+    padding: 30px 0;
+  }
+
+  .how-panel {
+    min-height: calc(100svh - 60px);
   }
 
   .how-content {
-    padding: 32px 24px 34px;
+    padding: 30px 20px 32px;
   }
 
   .how-layout {
@@ -594,6 +733,7 @@
   }
 
   .how-placeholder {
+    max-width: 360px;
     padding: 10px;
   }
 
@@ -616,16 +756,18 @@
 
   .clone-content {
     --clone-card-height: 54px;
-    padding: 36px 24px;
+    --clone-grid-gap: 10px;
+    padding: 30px 18px;
   }
 
   .clone-header h2 {
-    font-size: 38px;
+    font-size: 34px;
+    line-height: 1;
   }
 
   .clone-grid-viewport {
-    height: 258px;
-    margin-top: 28px;
+    height: 246px;
+    margin-top: 24px;
   }
 
   .clone-grid {
@@ -633,8 +775,18 @@
   }
 
   .clone-card {
-    min-height: 54px;
-    padding: 11px;
+    gap: 8px;
+    min-height: var(--clone-card-height);
+    padding: 10px;
+  }
+
+  .clone-card img {
+    height: 24px;
+    width: 24px;
+  }
+
+  .clone-card span {
+    font-size: 12px;
   }
 
   .coming-soon-section {
@@ -651,10 +803,11 @@
   }
 
   .footer-topline p {
-    font-size: clamp(16px, 5vw, 24px);
+    font-size: clamp(14px, 4.45vw, 17px);
   }
 
   .footer-links {
+    gap: 16px;
     margin-top: 24px;
     padding-top: 0;
   }

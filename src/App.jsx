@@ -313,7 +313,7 @@ function App() {
         }
       }
 
-      const maxParticles = maskWidth < 640 ? 3200 : 9000;
+      const maxParticles = maskWidth < 640 ? 1800 : 9000;
       const keepEvery = Math.max(1, Math.ceil(targets.length / maxParticles));
 
       particles = targets
@@ -343,7 +343,7 @@ function App() {
       const rect = canvas.getBoundingClientRect();
       width = rect.width;
       height = rect.height;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = width < 640 ? Math.min(window.devicePixelRatio || 1, 1.25) : Math.min(window.devicePixelRatio || 1, 2);
 
       canvas.width = Math.max(1, Math.floor(width * dpr));
       canvas.height = Math.max(1, Math.floor(height * dpr));
@@ -479,7 +479,7 @@ function App() {
       flexDirection: 'column'
     }}>
       {/* Navigation */}
-      <nav style={{ 
+      <nav className="site-nav" style={{
         padding: '16px 40px', 
         display: 'flex', 
         justifyContent: 'space-between', 
@@ -492,12 +492,13 @@ function App() {
         WebkitBackdropFilter: 'blur(16px)',
         borderBottom: '1px solid rgba(255, 255, 255, 0.05)'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <img src={logoUrl} alt="Relay Logo" style={{ width: '56px', height: 'auto', display: 'block' }} />
-          <span style={{ fontSize: '24px', fontWeight: 500, letterSpacing: '-0.5px' }}>Relay</span>
+        <div className="nav-brand" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <img className="nav-logo" src={logoUrl} alt="Relay Logo" style={{ width: '56px', height: 'auto', display: 'block' }} />
+          <span className="nav-wordmark" style={{ fontSize: '24px', fontWeight: 500, letterSpacing: '-0.5px' }}>Relay</span>
         </div>
         
         <button 
+          className="nav-contact"
           onMouseEnter={() => setHoverContact(true)}
           onMouseLeave={() => setHoverContact(false)}
           style={{ 
@@ -517,9 +518,9 @@ function App() {
         </button>
       </nav>
 
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+      <main className="page-main" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         {/* Hero Section */}
-        <section className="container" style={{ 
+        <section className="container hero-landing" style={{
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'space-between', 
@@ -530,8 +531,8 @@ function App() {
           width: '100%'
         }}>
           {/* Description Side (Left) */}
-          <div style={{ flex: '1 1 560px', minWidth: '520px' }}>
-            <h1 className="render-text" style={{ 
+          <div className="hero-copy-panel" style={{ flex: '1 1 560px', minWidth: 0, maxWidth: '620px' }}>
+            <h1 className="render-text hero-title" style={{
               fontSize: '60px', 
               fontWeight: 400, 
               lineHeight: 1.1, 
@@ -539,16 +540,17 @@ function App() {
               letterSpacing: '-2px'
             }}>
               Clone any{' '}
-              <span style={{ whiteSpace: 'nowrap' }}>
+              <span className="hero-title-phrase">
                 websites{' '}
                 <span style={{ fontStyle: 'italic', color: '#dad2c1', fontFamily: 'serif' }}>in seconds.</span>
               </span>
             </h1>
-            <p className="render-text" style={{ fontSize: '18px', color: '#c9c0ad', marginBottom: '32px', maxWidth: '520px', lineHeight: '1.6' }}>
+            <p className="render-text hero-subtitle" style={{ fontSize: '18px', color: '#c9c0ad', marginBottom: '32px', maxWidth: '520px', lineHeight: '1.6' }}>
               Install Relay right from your terminal using the CLI command below. Then pick your favorite website template and point your AI agent to the Relay.md file for setup and customization.
             </p>
-            <div style={{ display: 'flex', gap: '16px' }}>
+            <div className="hero-actions" style={{ display: 'flex', gap: '16px' }}>
               <button 
+                className="hero-copy-button"
                 onClick={() => handleCopy('hero')}
                 style={{
                   backgroundColor: copiedArea === 'hero' ? '#a3e635' : '#f7f5f0',
@@ -568,7 +570,7 @@ function App() {
           </div>
 
           {/* CLI Side (Right) */}
-          <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+          <div className="hero-terminal-wrap" style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
             <div className="cli-box" style={{ 
               backgroundColor: '#101010',
               border: '1px solid #242424',
@@ -591,13 +593,14 @@ function App() {
                 <div style={{ width: '10px', height: '10px', borderRadius: '50%', border: '1px solid #303030' }}></div>
               </div>
               
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                <div style={{ fontFamily: 'monospace', fontSize: '15px', display: 'flex', gap: '12px' }}>
+              <div className="hero-command-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                <div className="hero-command-text" style={{ fontFamily: 'monospace', fontSize: '15px', display: 'flex', gap: '12px' }}>
                   <span style={{ color: '#aea69c' }}>$</span>
                   <span style={{ letterSpacing: '0.5px' }}>{command}</span>
                 </div>
                 
                 <button 
+                  className="hero-command-copy"
                   onClick={() => handleCopy('hero')}
                   style={{ 
                     background: copiedArea === 'hero' ? 'rgba(163, 230, 53, 0.1)' : 'transparent',
@@ -622,19 +625,19 @@ function App() {
         </section>
 
         {/* Logo Carousel */}
-        <section style={{ 
+        <section className="logo-marquee-section" style={{
           padding: '24px 0', 
           overflow: 'hidden',
           position: 'relative',
           backgroundColor: 'transparent'
         }}>
           {/* Fades for smooth edges */}
-          <div style={{
+          <div className="logo-marquee-fade logo-marquee-fade-left" style={{
             position: 'absolute', top: 0, left: 0, width: '200px', height: '100%',
             background: 'linear-gradient(to right, #050505, transparent)',
             zIndex: 2
           }}></div>
-          <div style={{
+          <div className="logo-marquee-fade logo-marquee-fade-right" style={{
             position: 'absolute', top: 0, right: 0, width: '200px', height: '100%',
             background: 'linear-gradient(to left, #050505, transparent)',
             zIndex: 2
@@ -649,7 +652,7 @@ function App() {
               const filename = company.name.toLowerCase().replace(/[^a-z0-9]/g, '') + '.png';
               
               return (
-                <div key={idx} style={{
+                <div className="logo-pill" key={idx} style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: '10px',
@@ -669,6 +672,7 @@ function App() {
                   e.currentTarget.style.transform = 'scale(1)';
                 }}>
                   <img 
+                    className="logo-pill-image"
                     src={`/logos/${filename}`} 
                     alt={company.name} 
                     style={{ 
@@ -683,7 +687,7 @@ function App() {
                       e.target.style.display = 'none';
                     }}
                   />
-                  <span style={{ 
+                  <span className="logo-pill-name" style={{
                     display: 'block', 
                     fontSize: '15px', 
                     fontWeight: 500, 
