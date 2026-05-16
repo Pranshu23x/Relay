@@ -264,9 +264,6 @@ function App() {
     let frameId = null;
     let isVisible = false;
     let tick = 0;
-    let wordFont = '';
-    let wordBaselineY = 0;
-    let wordGradient = null;
     const pointer = {
       x: 0,
       y: 0,
@@ -275,17 +272,12 @@ function App() {
       radius: 118,
     };
 
-    const getGradientColor = (x, maxWidth) => {
-      const band = Math.round((x / maxWidth) * 10) / 10;
-      const greenToBlue = band < 0.5 ? band * 2 : (band - 0.5) * 2;
-      const start = band < 0.5 ? [35, 211, 141] : [64, 224, 208];
-      const end = band < 0.5 ? [64, 224, 208] : [58, 166, 255];
-      const r = Math.round(start[0] + (end[0] - start[0]) * greenToBlue);
-      const g = Math.round(start[1] + (end[1] - start[1]) * greenToBlue);
-      const b = Math.round(start[2] + (end[2] - start[2]) * greenToBlue);
-
-      return `rgba(${r}, ${g}, ${b}, 0.96)`;
-    };
+    const sandColors = [
+      [64, 224, 208],
+      [35, 211, 141],
+      [58, 166, 255],
+      [113, 244, 176],
+    ];
 
     const buildTargets = () => {
       const mask = document.createElement('canvas');
@@ -301,17 +293,15 @@ function App() {
       }
 
       const fontSize = Math.min(maskWidth * 0.3, maskHeight * 0.94, 340);
-      wordFont = `760 ${fontSize}px Geist, Inter, system-ui, sans-serif`;
-      wordBaselineY = maskHeight * 0.54;
       maskCtx.clearRect(0, 0, maskWidth, maskHeight);
       maskCtx.fillStyle = '#ffffff';
-      maskCtx.font = wordFont;
+      maskCtx.font = `760 ${fontSize}px Geist, Inter, system-ui, sans-serif`;
       maskCtx.textAlign = 'center';
       maskCtx.textBaseline = 'middle';
-      maskCtx.fillText('Relay', maskWidth / 2, wordBaselineY);
+      maskCtx.fillText('Relay', maskWidth / 2, maskHeight * 0.54);
 
       const pixels = maskCtx.getImageData(0, 0, maskWidth, maskHeight).data;
-      const sampleStep = maskWidth < 640 ? 5 : 4;
+      const sampleStep = maskWidth < 640 ? 3 : 2;
       const targets = [];
 
       for (let y = 0; y < maskHeight; y += sampleStep) {
@@ -323,12 +313,17 @@ function App() {
         }
       }
 
-      const maxParticles = maskWidth < 640 ? 1200 : 2600;
+      const maxParticles = maskWidth < 640 ? 3200 : 9000;
       const keepEvery = Math.max(1, Math.ceil(targets.length / maxParticles));
 
       particles = targets
         .filter((_, index) => index % keepEvery === 0)
         .map((target) => {
+          const blend = Math.max(0, Math.min(1, target.x / maskWidth));
+          const color = blend < 0.5
+            ? sandColors[Math.floor(Math.random() * 2)]
+            : sandColors[2 + Math.floor(Math.random() * 2)];
+
           return {
             x: Math.random() * maskWidth,
             y: Math.random() * maskHeight - maskHeight * 0.35,
@@ -336,9 +331,10 @@ function App() {
             targetY: target.y,
             vx: 0,
             vy: 0,
-            size: Math.random() * 1.2 + 1.6,
-            drift: (Math.random() - 0.5) * 0.02,
-            fill: getGradientColor(target.x, maskWidth),
+            size: Math.random() * 1.05 + 1.25,
+            alpha: Math.random() * 0.06 + 0.94,
+            phase: Math.random() * Math.PI * 2,
+            color,
           };
         });
     };
@@ -347,15 +343,11 @@ function App() {
       const rect = canvas.getBoundingClientRect();
       width = rect.width;
       height = rect.height;
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
       canvas.width = Math.max(1, Math.floor(width * dpr));
       canvas.height = Math.max(1, Math.floor(height * dpr));
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      wordGradient = ctx.createLinearGradient(width * 0.18, 0, width * 0.82, 0);
-      wordGradient.addColorStop(0, '#23d38d');
-      wordGradient.addColorStop(0.5, '#40e0d0');
-      wordGradient.addColorStop(1, '#3aa6ff');
       buildTargets();
     };
 
@@ -363,48 +355,34 @@ function App() {
       tick += 0.018;
       ctx.clearRect(0, 0, width, height);
 
-      if (wordGradient) {
-        ctx.save();
-        ctx.globalAlpha = pointer.active ? 0.2 : 0.28;
-        ctx.fillStyle = wordGradient;
-        ctx.font = wordFont;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('Relay', width / 2, wordBaselineY);
-        ctx.restore();
-      }
+      particles.forEach((particle) => {
+        const wind = Math.sin(tick + particle.phase) * 0.055;
+        const lift = Math.cos(tick * 0.9 + particle.phase) * 0.012;
+        const dx = particle.x - pointer.x;
+        const dy = particle.y - pointer.y;
+        const distance = Math.hypot(dx, dy);
+        const interactionRadius = pointer.pressed ? pointer.radius * 1.35 : pointer.radius;
 
-      const globalWind = Math.sin(tick) * 0.025;
-      const interactionRadius = pointer.pressed ? pointer.radius * 1.35 : pointer.radius;
-      const interactionRadiusSq = interactionRadius * interactionRadius;
-
-      for (let index = 0; index < particles.length; index += 1) {
-        const particle = particles[index];
-
-        if (pointer.active) {
-          const dx = particle.x - pointer.x;
-          const dy = particle.y - pointer.y;
-          const distanceSq = dx * dx + dy * dy;
-
-          if (distanceSq > 0 && distanceSq < interactionRadiusSq) {
-            const distance = Math.sqrt(distanceSq);
-            const pressure = (1 - distance / interactionRadius) ** 2;
-            const force = pointer.pressed ? 13 : 7;
-            particle.vx += (dx / distance) * pressure * force;
-            particle.vy += (dy / distance) * pressure * force;
-          }
+        if (pointer.active && distance > 0 && distance < interactionRadius) {
+          const pressure = (1 - distance / interactionRadius) ** 2;
+          const force = pointer.pressed ? 14 : 8;
+          particle.vx += (dx / distance) * pressure * force;
+          particle.vy += (dy / distance) * pressure * force;
         }
 
-        particle.vx += (particle.targetX - particle.x) * 0.03 + globalWind + particle.drift;
-        particle.vy += (particle.targetY - particle.y) * 0.03;
-        particle.vx *= 0.78;
-        particle.vy *= 0.78;
+        particle.vx += (particle.targetX - particle.x) * 0.026 + wind;
+        particle.vy += (particle.targetY - particle.y) * 0.026 + lift;
+        particle.vx *= 0.8;
+        particle.vy *= 0.8;
         particle.x += particle.vx;
         particle.y += particle.vy;
 
-        ctx.fillStyle = particle.fill;
-        ctx.fillRect(particle.x, particle.y, particle.size, particle.size);
-      }
+        const alpha = Math.min(1, particle.alpha + Math.sin(tick * 1.8 + particle.phase) * 0.018);
+        ctx.fillStyle = `rgba(${particle.color[0]}, ${particle.color[1]}, ${particle.color[2]}, ${alpha})`;
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
 
       frameId = isVisible ? requestAnimationFrame(draw) : null;
     };
