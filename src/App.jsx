@@ -796,7 +796,7 @@ function App() {
                 <div className="how-copy">
                   <div className="how-intro">
                     <h2 id="how-heading">Install Relay. It's free.</h2>
-                    <p>Install Relay, choose the website you want to clone, then let your AI agent use the generated Relay.md file to build a tailored version aligned with your brand and design preferences.</p>
+                    <p>Install Relay, choose the website you want to clone. It'll then generate a Relay.md file. Tell your AI agent to use the generated Relay.md file to build a tailored version aligned with your brand and design preferences.</p>
                   </div>
 
                   <div className="how-command">
