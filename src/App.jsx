@@ -119,6 +119,7 @@ function App() {
   const sandCanvasRef = React.useRef(null);
   const command = "npx getrelay@latest";
   const email = "pranshukr006@gmail.com";
+  const npmPackageUrl = "https://www.npmjs.com/package/relaydesgins";
 
   useEffect(() => {
     // Split the text into characters
@@ -605,10 +606,14 @@ function App() {
             >
                 {copiedArea === 'hero' ? 'Copied!' : 'Copy Command'}
               </button>
-              <div className="npm-download-badge" aria-label="npm downloads badge">
+              <a
+                className="npm-download-badge"
+                href={npmPackageUrl}
+                aria-label="View Relay on npm"
+              >
                 <span className="npm-logo-mark">npm</span>
-                <span className="npm-download-text">1000+ downloads in 3 days</span>
-              </div>
+                <span className="npm-download-text">100K+ downloads</span>
+              </a>
             </div>
           </div>
 
